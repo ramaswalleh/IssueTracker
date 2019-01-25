@@ -3,6 +3,8 @@
     <string name="water_point_id">Water point ID</string>
     <string name="water_point_name">Water point Name</string>
     <string name="add_update">Add</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
     <array name="case_padlock">
         <item>Casing is broken/sagging</item>
         <item>Casing is cracked around the screws</item>
