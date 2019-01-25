@@ -1,18 +1,25 @@
 package com.ramaswalleh.issuetracker;
 
+import android.content.DialogInterface;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        //readIssues();
+        readIssues();
     }
 
     private void createIssue() {
@@ -101,6 +108,32 @@ public class MainActivity extends AppCompatActivity {
         request.execute();
     }
 
+    public void readIssues() {
+        PerformNetworkRequest request = new PerformNetworkRequest(Api.URL_READ_ISSUE, null, CODE_GET_REQUEST);
+        request.execute();
+    }
+
+    private void refreshIssueList(JSONArray issues) throws JSONException {
+        issueList.clear();
+
+        for (int i = 0; i < issues.length(); i++) {
+            JSONObject obj = issues.getJSONObject(i);
+
+            issueList.add(new Issue(
+                    obj.getInt("id"),
+                    obj.getInt("waterpoint_id"),
+                    obj.getString("waterpoint_name"),
+                    obj.getString("case_padlock"),
+                    obj.getString("tank_valve"),
+                    obj.getString("base_stand_bolt"),
+                    obj.getInt("rating")
+            ));
+        }
+
+        IssueAdapter adapter = new IssueAdapter(issueList);
+        listViewIssues.setAdapter(adapter);
+    }
+
     private class PerformNetworkRequest extends AsyncTask<Void, Void, String> {
         String url;
         HashMap<String, String> params;
@@ -126,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject object = new JSONObject(s);
                 if (!object.getBoolean("error")) {
                     Toast.makeText(getApplicationContext(), object.getString("message"), Toast.LENGTH_SHORT).show();
-                    //refreshIssueList(object.getJSONArray("issues"));
+                    refreshIssueList(object.getJSONArray("issues"));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -144,6 +177,69 @@ public class MainActivity extends AppCompatActivity {
                 return requestHandler.sendGetRequest(url);
 
             return null;
+        }
+    }
+
+    class IssueAdapter extends ArrayAdapter<Issue> {
+        List<Issue> issueList;
+
+        public IssueAdapter(List<Issue> issueList) {
+            super(MainActivity.this, R.layout.layout_issue_list, issueList);
+            this.issueList = issueList;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View listViewItem = inflater.inflate(R.layout.layout_issue_list, null, true);
+
+            TextView textViewWaterPointName = listViewItem.findViewById(R.id.textViewWaterPointName);
+            TextView textViewUpdate = listViewItem.findViewById(R.id.textViewUpdate);
+            TextView textViewDelete = listViewItem.findViewById(R.id.textViewDelete);
+
+            final Issue issue = issueList.get(position);
+
+            textViewWaterPointName.setText(issue.getWaterPointName());
+
+            textViewUpdate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    isUpdating = true;
+
+                    editTextIssueID.setText(String.valueOf(issue.getId()));
+                    editTextWaterpointID.setText(issue.getWaterPointId());
+                    editTextWaterpointName.setText(issue.getWaterPointName());
+                    spinnerCasePadlock.setSelection(((ArrayAdapter<String>) spinnerCasePadlock.getAdapter()).getPosition(issue.getCasePadlock()));
+                    spinnerTankValve.setSelection(((ArrayAdapter<String>) spinnerTankValve.getAdapter()).getPosition(issue.getTankValve()));
+                    spinnerBaseStandBolt.setSelection(((ArrayAdapter<String>) spinnerBaseStandBolt.getAdapter()).getPosition(issue.getBaseStandBolt()));
+
+                    buttonAddUpdate.setText("Update");
+                }
+            });
+
+            textViewDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                    builder.setTitle("Delete " + issue.getWaterPointName())
+                            .setMessage("Are you sure you want to clear this issue entry?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //deleteIssue(issue.getId());
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+            });
+            return listViewItem;
         }
     }
 }
