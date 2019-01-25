@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Issue Tracker</string>
+    <string name="water_point_id">Water point ID</string>
+    <string name="water_point_name">Water point Name</string>
+    <string name="add_update">Add</string>
+    <array name="case_padlock">
+        <item>Casing is broken/sagging</item>
+        <item>Casing is cracked around the screws</item>
+        <item>Casing hinge broken</item>
+        <item>Casing lock hole broken</item>
+        <item>Casing cracked/broken in other location</item>
+        <item>Lid to dispenser is missing</item>
+        <item>Lid to dispenser is bent/cracked</item>
+        <item>Padlock broken</item>
+        <item>Padlock missing</item>
+        <item>Padlock rusted</item>
+        <item>Hinge reinforcement surface cracked</item>
+        <item>Casing lip cracked/broken</item>
+        <item>Dispenser lid broken in other manner</item>
+        <item>Hinge brace missing</item>
+        <item>Lid brace missing</item>
+        <item>Other reinforcement issue</item>
+    </array>
+    <array name="tank_valve">
+        <item>Tank cap is missing</item>
+        <item>Dispenser is leaking</item>
+        <item>Valve broken</item>
+        <item>Valve unable to dispense chlorine</item>
+        <item>Valve handle missing</item>
+        <item>Valve is leaking</item>
+        <item>Tank and valve missing</item>
+        <item>Valve unable to turn</item>
+        <item>Valve difficult to turn</item>
+    </array>
+    <array name="base_stand_bolt">
+        <item>Concrete stand is cracking/peeling/degrading</item>
+        <item>Metal post is broken/damaged</item>
+        <item>PVC post is broken/damaged</item>
+        <item>Bolts and/or nuts loose</item>
+        <item>Bolts and/or nuts missing</item>
+        <item>Bolts and/or nuts rusted</item>
+        <item>L-Metal bar reinforcement</item>
+    </array>
+</resources>
