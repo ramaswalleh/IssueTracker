@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isUpdating) {
-                    //updateIssue();
+                    updateIssue();
                 } else {
                     createIssue();
                 }
@@ -108,8 +108,58 @@ public class MainActivity extends AppCompatActivity {
         request.execute();
     }
 
-    public void readIssues() {
+    private void readIssues() {
         PerformNetworkRequest request = new PerformNetworkRequest(Api.URL_READ_ISSUE, null, CODE_GET_REQUEST);
+        request.execute();
+    }
+
+    private void updateIssue() {
+        String issueID = editTextIssueID.getText().toString();
+        String waterpointID = editTextWaterpointID.getText().toString().trim();
+        String waterpointName = editTextWaterpointName.getText().toString().trim();
+        String casePadLock = spinnerCasePadlock.getSelectedItem().toString();
+        String tankValve = spinnerTankValve.getSelectedItem().toString();
+        String baseStandBolt = spinnerBaseStandBolt.getSelectedItem().toString();
+        int rating = (int) ratingBar.getRating();
+
+        if (TextUtils.isEmpty(waterpointID)) {
+            editTextWaterpointID.setError("Please enter a water point ID!");
+            editTextWaterpointID.requestFocus();
+            return;
+        }
+
+        if (TextUtils.isEmpty(waterpointName)) {
+            editTextWaterpointName.setError("Please enter a water point name!");
+            editTextWaterpointName.requestFocus();
+            return;
+        }
+
+        HashMap<String, String> params = new HashMap<>();
+        params.put("id", issueID);
+        params.put("waterpoint_id", waterpointID);
+        params.put("waterpoint_name", waterpointName);
+        params.put("case_padlock", casePadLock);
+        params.put("tank_valve", tankValve);
+        params.put("base_stand_bolt", baseStandBolt);
+        params.put("rating", String.valueOf(rating));
+
+        PerformNetworkRequest request = new PerformNetworkRequest(Api.URL_UPDATE_ISSUE, params, CODE_POST_REQUEST);
+        request.execute();
+
+        buttonAddUpdate.setText("Add");
+
+        editTextWaterpointID.setText("");
+        editTextWaterpointName.setText("");
+        spinnerCasePadlock.setSelection(0);
+        spinnerTankValve.setSelection(0);
+        spinnerBaseStandBolt.setSelection(0);
+        ratingBar.setRating(0);
+
+        isUpdating = false;
+    }
+
+    private void deleteIssue(int id) {
+        PerformNetworkRequest request = new PerformNetworkRequest(Api.URL_DELETE_ISSUE + id, null, CODE_GET_REQUEST);
         request.execute();
     }
 
@@ -207,11 +257,12 @@ public class MainActivity extends AppCompatActivity {
                     isUpdating = true;
 
                     editTextIssueID.setText(String.valueOf(issue.getId()));
-                    editTextWaterpointID.setText(issue.getWaterPointId());
+                    editTextWaterpointID.setText(String.valueOf(issue.getWaterPointId()));
                     editTextWaterpointName.setText(issue.getWaterPointName());
                     spinnerCasePadlock.setSelection(((ArrayAdapter<String>) spinnerCasePadlock.getAdapter()).getPosition(issue.getCasePadlock()));
                     spinnerTankValve.setSelection(((ArrayAdapter<String>) spinnerTankValve.getAdapter()).getPosition(issue.getTankValve()));
                     spinnerBaseStandBolt.setSelection(((ArrayAdapter<String>) spinnerBaseStandBolt.getAdapter()).getPosition(issue.getBaseStandBolt()));
+                    ratingBar.setRating(issue.getRating());
 
                     buttonAddUpdate.setText("Update");
                 }
@@ -227,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    //deleteIssue(issue.getId());
+                                    deleteIssue(issue.getId());
                                 }
                             })
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
