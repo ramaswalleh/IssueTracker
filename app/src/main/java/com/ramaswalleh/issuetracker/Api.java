@@ -1,7 +1,7 @@
 package com.ramaswalleh.issuetracker;
 
 public class Api {
-    private static final String ROOT_URL = "http://192.168.43.216/api/v1/Api.php?apicall=";
+    private static final String ROOT_URL = "http://10.0.2.2/api/v1/Api.php?apicall=";
     public static final String URL_CREATE_ISSUE = ROOT_URL + "createissue";
     public static final String URL_READ_ISSUE = ROOT_URL + "getissue";
     public static final String URL_UPDATE_ISSUE = ROOT_URL + "updateissue";
